@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SaaS PRO</title>
+</head>
+<body>
+
+<h2>Auth</h2>
+<input id="user" placeholder="username"/>
+<input id="pass" placeholder="password"/>
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+
+<h2>Dashboard</h2>
+<input id="prompt" placeholder="Enter prompt"/>
+<button onclick="generate()">Generate</button>
+
+<p id="credits"></p>
+<p id="output"></p>
+
+<script>
+let token = "";
+
+async function register(){
+  await fetch("http://localhost:8000/auth/register", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: user.value,
+      password: pass.value
+    })
+  });
+  alert("Registered");
+}
+
+async function login(){
+  const res = await fetch("http://localhost:8000/auth/login", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: user.value,
+      password: pass.value
+    })
+  });
+
+  const data = await res.json();
+  token = data.token;
+  alert("Logged in");
+}
+
+async function generate(){
+  const res = await fetch("http://localhost:8000/generate?token="+token, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({text: prompt.value})
+  });
+
+  const data = await res.json();
+  output.innerText = data.result;
+  credits.innerText = "Credits: " + data.credits;
+}
+</script>
+
+</body>
+</html>
